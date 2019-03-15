@@ -28,6 +28,10 @@ bool ApplicationTest::Startup()
 	m_rotations[0] = glm::quat(glm::vec3(0, 0, 0));
 	m_rotations[1] = glm::quat(glm::vec3(0, glm::pi<float>(), 0));
 
+	m_camera = new FlyCam();
+	m_camera->SetLookAt(glm::vec3(-10, -10, -10), glm::vec3(10, 10, 10), glm::vec3(0, 1, 0));
+	m_camera->SetPosition(glm::vec3(10, 10, 10));
+
 	return true;
 }
 
@@ -42,6 +46,9 @@ bool ApplicationTest::Update()
 	{
 		m_cameraRotation -= 0.1;
 	}
+
+	m_camera->Update();
+
 	return true;
 }
 
@@ -79,10 +86,11 @@ void ApplicationTest::Draw()
 
 	aie::Gizmos::addSphere(vec3(0), 1, 50, 50, vec4(1, 1, 1, 1));
 
-	aie::Gizmos::draw(projection * view);
+	//aie::Gizmos::draw(projection * view);
+	aie::Gizmos::draw(m_camera->GetProjectionView());
 }
 
 void ApplicationTest::Shutdown()
 {
-	
+	delete m_camera;
 }

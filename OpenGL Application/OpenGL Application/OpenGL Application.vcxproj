@@ -144,6 +144,8 @@
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="ApplicationTest.cpp" />
+    <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="FlyCam.cpp" />
     <ClCompile Include="Gizmos.cpp" />
     <ClCompile Include="gl_core_4_4.c" />
     <ClCompile Include="Input.cpp" />
@@ -152,6 +154,8 @@
   <ItemGroup>
     <ClInclude Include="Application.h" />
     <ClInclude Include="ApplicationTest.h" />
+    <ClInclude Include="Camera.h" />
+    <ClInclude Include="FlyCam.h" />
     <ClInclude Include="Gizmos.h" />
     <ClInclude Include="gl_core_4_4.h" />
     <ClInclude Include="Input.h" />

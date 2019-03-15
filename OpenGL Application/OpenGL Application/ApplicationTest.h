@@ -2,6 +2,7 @@
 #include "Application.h"
 #include <glm/vec3.hpp>
 #include <glm/gtx/quaternion.hpp>
+#include "FlyCam.h"
 class ApplicationTest : public Application
 {
 public:
@@ -17,5 +18,7 @@ private:
 	float m_cameraRotation;
 	glm::vec3 m_positions[2];
 	glm::quat m_rotations[2];
+
+	FlyCam* m_camera;
 };
 
