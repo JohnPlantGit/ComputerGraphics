@@ -152,13 +152,15 @@ void ApplicationTest::Draw()
 
 	m_shader.bindUniform("ProjectionViewModel", m_camera->GetProjectionView() * m_quadTransform);
 	m_shader.bindUniform("NormalMatrix", glm::inverseTranspose(glm::mat3(m_quadTransform)));
+	m_shader.bindUniform("ModelMatrix", m_quadTransform);
+
 	//m_shader.bindUniform("Kd", 0);
 	m_shader.bindUniform("time", (float)glfwGetTime());
 	m_texture.bind(0);
 
 	m_quadMesh.Draw();
 
-	m_shader.bindUniform("ProjectionViewModel", m_camera->GetProjectionView() * m_boxTransform);
+	//m_shader.bindUniform("ProjectionViewModel", m_camera->GetProjectionView() * m_boxTransform);
 	//m_shader.bindUniform("Colour", glm::vec4(0, 0, 1, 1));
 	//m_boxMesh.Draw();
 
