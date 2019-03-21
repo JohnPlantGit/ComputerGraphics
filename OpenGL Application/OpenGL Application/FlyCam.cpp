@@ -16,29 +16,39 @@ void FlyCam::Update()
 {
 	glm::vec3 position = GetPosition();
 	glm::vec3 movement(0);
+
+	float speed = 0;
+	if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_LEFT_SHIFT))
+	{
+		speed = 1;
+	}
+	else
+	{
+		speed = 0.1f;
+	}
 	if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_W))
 	{
-		movement.z = -1;
+		movement.z = -speed;
 	}
 	if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_S))
 	{
-		movement.z = 1;
+		movement.z = speed;
 	}
 	if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_A))
 	{
-		movement.x = -1;
+		movement.x = -speed;
 	}
 	if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_D))
 	{
-		movement.x = 1;
+		movement.x = speed;
 	}
 	if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_LEFT_CONTROL))
 	{
-		movement.y = -1;
+		movement.y = -speed;
 	}
 	if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_SPACE))
 	{
-		movement.y = 1;
+		movement.y = speed;
 	}
 
 

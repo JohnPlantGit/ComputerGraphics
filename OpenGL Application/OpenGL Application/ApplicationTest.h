@@ -22,7 +22,13 @@ public:
 	{
 		glm::vec3 direction;
 		glm::vec3 diffuse;
-		glm::vec3 Specular;
+		glm::vec3 specular;
+	};
+	struct Material
+	{
+		glm::vec3 ambient;
+		glm::vec3 diffuse;
+		glm::vec3 specular;
 	};
 
 private:

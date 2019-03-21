@@ -52,9 +52,9 @@ bool ApplicationTest::Startup()
 
 	m_quadTransform =
 	{
-		10,0,0,0,
-		0,10,0,0,
-		0,0,10,0,
+		1,0,0,0,
+		0,1,0,0,
+		0,0,1,0,
 		0,0,0,1
 	};
 
@@ -81,8 +81,8 @@ bool ApplicationTest::Startup()
 		return false;
 	}
 
-	m_light.diffuse = { 1,1,0 };
-	m_light.Specular = { 1,1,0 };
+	m_light.diffuse = { 1,1,1 };
+	m_light.specular = { 1,1,1 };
 	m_ambientLight = { 0.25f,0.25f,0.25f };
 
 	return true;
@@ -102,6 +102,7 @@ bool ApplicationTest::Update()
 
 	m_camera->Update();
 	m_light.direction = glm::normalize(glm::vec3(glm::cos(glfwGetTime()), glm::sin(glfwGetTime()), 0));
+	//m_light.direction = glm::normalize(glm::vec3(0, 0, -1));
 
 	return true;
 }
@@ -138,7 +139,7 @@ void ApplicationTest::Draw()
 	glm::mat4 m = glm::translate(p) * glm::toMat4(r);
 	aie::Gizmos::addAABBFilled(p, glm::vec3(0.5f), glm::vec4(1, 0, 0, 1), &m);
 
-	aie::Gizmos::addSphere(vec3(0), 1, 50, 50, vec4(1, 1, 1, 1));
+	//aie::Gizmos::addSphere(vec3(0), 1, 50, 50, vec4(1, 1, 1, 1));
 
 	aie::Gizmos::addSphere(-m_light.direction * 10, 1, 10, 10, glm::vec4(1, 1, 1, 1)); // light
 
@@ -147,15 +148,20 @@ void ApplicationTest::Draw()
 	// bind light
 	m_shader.bindUniform("Ia", m_ambientLight);
 	m_shader.bindUniform("Id", m_light.diffuse);
-	m_shader.bindUniform("Is", m_light.Specular);
+	m_shader.bindUniform("Is", m_light.specular);
 	m_shader.bindUniform("LightDirection", m_light.direction);
 
+	m_shader.bindUniform("CameraPosition", m_camera->GetPosition());
+	m_shader.bindUniform("Roughness", 1.f);
+	m_shader.bindUniform("ReflectionCoefficient", 1.f);
+	m_shader.bindUniform()
+
+	// bind matrices
 	m_shader.bindUniform("ProjectionViewModel", m_camera->GetProjectionView() * m_quadTransform);
 	m_shader.bindUniform("NormalMatrix", glm::inverseTranspose(glm::mat3(m_quadTransform)));
 	m_shader.bindUniform("ModelMatrix", m_quadTransform);
 
-	//m_shader.bindUniform("Kd", 0);
-	m_shader.bindUniform("time", (float)glfwGetTime());
+	//m_shader.bindUniform("time", (float)glfwGetTime());
 	m_texture.bind(0);
 
 	m_quadMesh.Draw();
