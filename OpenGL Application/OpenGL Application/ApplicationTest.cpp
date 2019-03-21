@@ -67,7 +67,7 @@ bool ApplicationTest::Startup()
 		0,0,0,1
 	};
 
-	if (m_bunnyMesh.load("../Data/soulspear/soulspear.obj", true, true) == false)
+	if (m_swordMesh.load("../Data/soulspear/soulspear.obj", true, true) == false)
 	{
 		printf("Bunny Mesh Error!\n");
 		return false;
@@ -83,7 +83,10 @@ bool ApplicationTest::Startup()
 
 	m_light.diffuse = { 1,1,1 };
 	m_light.specular = { 1,1,1 };
-	m_ambientLight = { 0.25f,0.25f,0.25f };
+	m_light2.diffuse = { 1,1,1 };
+	m_light2.specular = { 1,1,1 };
+	//m_ambientLight = { 0.25f,0.25f,0.25f };
+	m_ambientLight = { 1,1,1 };
 
 	return true;
 }
@@ -102,6 +105,7 @@ bool ApplicationTest::Update()
 
 	m_camera->Update();
 	m_light.direction = glm::normalize(glm::vec3(glm::cos(glfwGetTime()), glm::sin(glfwGetTime()), 0));
+	m_light2.direction = -glm::normalize(glm::vec3(glm::cos(glfwGetTime()), 0, glm::sin(glfwGetTime())));
 	//m_light.direction = glm::normalize(glm::vec3(0, 0, -1));
 
 	return true;
@@ -142,19 +146,26 @@ void ApplicationTest::Draw()
 	//aie::Gizmos::addSphere(vec3(0), 1, 50, 50, vec4(1, 1, 1, 1));
 
 	aie::Gizmos::addSphere(-m_light.direction * 10, 1, 10, 10, glm::vec4(1, 1, 1, 1)); // light
+	aie::Gizmos::addSphere(-m_light2.direction * 10, 1, 10, 10, glm::vec4(1, 1, 1, 1)); // light
 
 	m_shader.bind();
 
-	// bind light
+	// bind lights
 	m_shader.bindUniform("Ia", m_ambientLight);
-	m_shader.bindUniform("Id", m_light.diffuse);
-	m_shader.bindUniform("Is", m_light.specular);
-	m_shader.bindUniform("LightDirection", m_light.direction);
+
+	m_shader.bindUniform("lights[0].diffuse", m_light.diffuse);
+	m_shader.bindUniform("lights[0].specular", m_light.specular);
+	m_shader.bindUniform("lights[0].direction", m_light.direction);
+
+	m_shader.bindUniform("lights[1].diffuse", m_light2.diffuse);
+	m_shader.bindUniform("lights[1].specular", m_light2.specular);
+	m_shader.bindUniform("lights[1].direction", m_light2.direction);
+	//
 
 	m_shader.bindUniform("CameraPosition", m_camera->GetPosition());
+
 	m_shader.bindUniform("Roughness", 1.f);
-	m_shader.bindUniform("ReflectionCoefficient", 1.f);
-	m_shader.bindUniform()
+	m_shader.bindUniform("ReflectionCoefficient", 10.f);
 
 	// bind matrices
 	m_shader.bindUniform("ProjectionViewModel", m_camera->GetProjectionView() * m_quadTransform);
@@ -166,11 +177,9 @@ void ApplicationTest::Draw()
 
 	m_quadMesh.Draw();
 
-	//m_shader.bindUniform("ProjectionViewModel", m_camera->GetProjectionView() * m_boxTransform);
-	//m_shader.bindUniform("Colour", glm::vec4(0, 0, 1, 1));
 	//m_boxMesh.Draw();
 
-	m_bunnyMesh.draw();
+	m_swordMesh.draw();
 
 	//aie::Gizmos::draw(projection * view);
 	aie::Gizmos::draw(m_camera->GetProjectionView());

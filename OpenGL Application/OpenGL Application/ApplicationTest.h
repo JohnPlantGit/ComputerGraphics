@@ -43,9 +43,10 @@ private:
 	glm::mat4 m_quadTransform;
 	Mesh m_boxMesh;
 	glm::mat4 m_boxTransform;
-	aie::OBJMesh m_bunnyMesh;
+	aie::OBJMesh m_swordMesh;
 	aie::Texture m_texture;
 	Light m_light;
+	Light m_light2;
 	glm::vec3 m_ambientLight;
 };
 
