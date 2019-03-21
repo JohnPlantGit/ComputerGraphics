@@ -38,12 +38,20 @@ private:
 
 	FlyCam* m_camera;
 
-	aie::ShaderProgram m_shader;
+	aie::ShaderProgram m_BRDFShader;
+	aie::ShaderProgram m_toonShader;
+
 	Mesh m_quadMesh;
-	glm::mat4 m_quadTransform;
 	Mesh m_boxMesh;
 	glm::mat4 m_boxTransform;
-	aie::OBJMesh m_swordMesh;
+	
+	aie::OBJMesh m_spearMesh;
+	glm::mat4 m_spearTransform;
+
+	aie::OBJMesh m_toonSpearMesh;
+	glm::mat4 m_toonSpearTransform;
+
+	//aie::OBJMesh m_carMesh;
 	aie::Texture m_texture;
 	Light m_light;
 	Light m_light2;

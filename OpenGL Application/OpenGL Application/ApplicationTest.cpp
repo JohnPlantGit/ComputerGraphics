@@ -32,11 +32,18 @@ bool ApplicationTest::Startup()
 	m_camera->SetLookAt(glm::vec3(-10, -10, -10), glm::vec3(10, 10, 10), glm::vec3(0, 1, 0));
 	m_camera->SetPosition(glm::vec3(10, 10, 10));
 
-	m_shader.loadShader(aie::eShaderStage::VERTEX, "../Shaders/simple.vert");
-	m_shader.loadShader(aie::eShaderStage::FRAGMENT, "../Shaders/simple.frag");
-	if (m_shader.link() == false)
+	m_BRDFShader.loadShader(aie::eShaderStage::VERTEX, "../Shaders/simple.vert");
+	m_BRDFShader.loadShader(aie::eShaderStage::FRAGMENT, "../Shaders/simple.frag");
+	if (m_BRDFShader.link() == false)
 	{
-		printf("Shader Error: %s\n", m_shader.getLastError());
+		printf("Shader Error: %s\n", m_BRDFShader.getLastError());
+		return false;
+	}
+	m_toonShader.loadShader(aie::eShaderStage::VERTEX, "../Shaders/toon.vert");
+	m_toonShader.loadShader(aie::eShaderStage::FRAGMENT, "../Shaders/toon.frag");
+	if (m_toonShader.link() == false)
+	{
+		printf("Toon Shader Error: %s\n", m_toonShader.getLastError());
 		return false;
 	}
 
@@ -50,13 +57,22 @@ bool ApplicationTest::Startup()
 
 	m_quadMesh.InitialiseQuad();
 
-	m_quadTransform =
+	m_spearTransform =
 	{
 		1,0,0,0,
 		0,1,0,0,
 		0,0,1,0,
-		0,0,0,1
+		3,0,0,1
 	};
+
+	m_toonSpearTransform =
+	{
+		1,0,0,0,
+		0,1,0,0,
+		0,0,1,0,
+		-3,0,0,1
+	};
+
 
 	m_boxMesh.InitialiseBox(glm::vec3(3,3,3));
 	m_boxTransform =
@@ -67,11 +83,21 @@ bool ApplicationTest::Startup()
 		0,0,0,1
 	};
 
-	if (m_swordMesh.load("../Data/soulspear/soulspear.obj", true, true) == false)
+	if (m_spearMesh.load("../Data/soulspear/soulspear.obj", true, true) == false)
 	{
-		printf("Bunny Mesh Error!\n");
+		printf("Spear Mesh Error!\n");
 		return false;
 	}
+	if (m_toonSpearMesh.load("../Data/soulspear/soulspear.obj", true, true) == false)
+	{
+		printf("Spear Mesh Error!\n");
+		return false;
+	}
+	/*if (m_carMesh.load("../Data/bugatti/bugatti.obj", false) == false)
+	{
+		printf("Car Mesh Error!\n");
+		return false;
+	}*/
 
 	//unsigned char texelData[4] = { 0, 255, 255, 0 };
 	//m_texture.create(2, 2, aie::Texture::RED, texelData);
@@ -104,9 +130,9 @@ bool ApplicationTest::Update()
 	}
 
 	m_camera->Update();
-	m_light.direction = glm::normalize(glm::vec3(glm::cos(glfwGetTime()), glm::sin(glfwGetTime()), 0));
+	//m_light.direction = glm::normalize(glm::vec3(glm::cos(glfwGetTime()), glm::sin(glfwGetTime()), 0));
+	m_light.direction = glm::normalize(glm::vec3(0, 0, -1));
 	m_light2.direction = -glm::normalize(glm::vec3(glm::cos(glfwGetTime()), 0, glm::sin(glfwGetTime())));
-	//m_light.direction = glm::normalize(glm::vec3(0, 0, -1));
 
 	return true;
 }
@@ -148,38 +174,61 @@ void ApplicationTest::Draw()
 	aie::Gizmos::addSphere(-m_light.direction * 10, 1, 10, 10, glm::vec4(1, 1, 1, 1)); // light
 	aie::Gizmos::addSphere(-m_light2.direction * 10, 1, 10, 10, glm::vec4(1, 1, 1, 1)); // light
 
-	m_shader.bind();
+	// bind the BRDF shader
+	m_BRDFShader.bind();
 
 	// bind lights
-	m_shader.bindUniform("Ia", m_ambientLight);
+	m_BRDFShader.bindUniform("Ia", m_ambientLight);
 
-	m_shader.bindUniform("lights[0].diffuse", m_light.diffuse);
-	m_shader.bindUniform("lights[0].specular", m_light.specular);
-	m_shader.bindUniform("lights[0].direction", m_light.direction);
+	m_BRDFShader.bindUniform("lights[0].diffuse", m_light.diffuse);
+	m_BRDFShader.bindUniform("lights[0].specular", m_light.specular);
+	m_BRDFShader.bindUniform("lights[0].direction", m_light.direction);
 
-	m_shader.bindUniform("lights[1].diffuse", m_light2.diffuse);
-	m_shader.bindUniform("lights[1].specular", m_light2.specular);
-	m_shader.bindUniform("lights[1].direction", m_light2.direction);
+	m_BRDFShader.bindUniform("lights[1].diffuse", m_light2.diffuse);
+	m_BRDFShader.bindUniform("lights[1].specular", m_light2.specular);
+	m_BRDFShader.bindUniform("lights[1].direction", m_light2.direction);
 	//
 
-	m_shader.bindUniform("CameraPosition", m_camera->GetPosition());
+	m_BRDFShader.bindUniform("CameraPosition", m_camera->GetPosition());
 
-	m_shader.bindUniform("Roughness", 1.f);
-	m_shader.bindUniform("ReflectionCoefficient", 10.f);
+	m_BRDFShader.bindUniform("Roughness", 1.f);
+	m_BRDFShader.bindUniform("ReflectionCoefficient", 10.f);
 
 	// bind matrices
-	m_shader.bindUniform("ProjectionViewModel", m_camera->GetProjectionView() * m_quadTransform);
-	m_shader.bindUniform("NormalMatrix", glm::inverseTranspose(glm::mat3(m_quadTransform)));
-	m_shader.bindUniform("ModelMatrix", m_quadTransform);
+	m_BRDFShader.bindUniform("ProjectionViewModel", m_camera->GetProjectionView() * m_spearTransform);
+	m_BRDFShader.bindUniform("NormalMatrix", glm::inverseTranspose(glm::mat3(m_spearTransform)));
+	m_BRDFShader.bindUniform("ModelMatrix", m_spearTransform);
 
-	//m_shader.bindUniform("time", (float)glfwGetTime());
-	m_texture.bind(0);
+	//m_BRDFShader.bindUniform("time", (float)glfwGetTime());
+	m_spearMesh.draw();
 
-	m_quadMesh.Draw();
+	// bind the toon shader
+	m_toonShader.bind();
+
+	// bind matrices
+	m_toonShader.bindUniform("ProjectionViewModel", m_camera->GetProjectionView() * m_toonSpearTransform);
+	m_toonShader.bindUniform("NormalMatrix", glm::inverseTranspose(glm::mat3(m_toonSpearTransform)));
+	m_toonShader.bindUniform("ModelMatrix", m_toonSpearTransform);
+
+	// bind lights
+	m_toonShader.bindUniform("lights[0].diffuse", m_light.diffuse);
+	m_toonShader.bindUniform("lights[0].specular", m_light.specular);
+	m_toonShader.bindUniform("lights[0].direction", m_light.direction);
+
+	m_toonShader.bindUniform("lights[1].diffuse", m_light2.diffuse);
+	m_toonShader.bindUniform("lights[1].specular", m_light2.specular);
+	m_toonShader.bindUniform("lights[1].direction", m_light2.direction);
+
+	m_toonSpearMesh.draw();
+	//
+
+	//m_texture.bind(0);
+
+	//m_quadMesh.Draw();
 
 	//m_boxMesh.Draw();
 
-	m_swordMesh.draw();
+	//m_carMesh.draw();
 
 	//aie::Gizmos::draw(projection * view);
 	aie::Gizmos::draw(m_camera->GetProjectionView());

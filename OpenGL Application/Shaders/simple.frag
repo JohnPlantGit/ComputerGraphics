@@ -26,6 +26,7 @@ uniform float specularPower; // material specular power
 uniform sampler2D specularTexture; // material specular texture
 uniform float Roughness; // material roughness
 uniform float ReflectionCoefficient;
+uniform sampler2D normalTexture;
 
 uniform vec3 CameraPosition;
 
@@ -36,10 +37,12 @@ vec3 CalculateLight(Light light, vec3 normal, vec3 fragPos, vec2 texCoord);
 void main()
 {
 	vec3 result;
+
+	vec3 normal = normalize(vNormal + normalize(texture(normalTexture, vTexCoord) * 2.0f - 1.0f).rgb);
 	
 	for (int i = 0; i < LIGHT_COUNT; i++)
 	{
-		result += CalculateLight(lights[i], vNormal, vPosition, vTexCoord);
+		result += CalculateLight(lights[i], normal, vPosition, vTexCoord);
 	}
 
 	FragColour = vec4(result, 1);
