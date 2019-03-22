@@ -17,6 +17,8 @@ public:
 	void InitialiseBox(glm::vec3 extents);
 
 	void InitialiseQuad();
+	void InitialiseFullscreenQuad();
+
 
 	virtual void Draw();
 

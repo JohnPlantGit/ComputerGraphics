@@ -23,7 +23,7 @@ void Application::Run(int width, int height, const char* title)
 
 			Update();
 
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 			Draw();
 
@@ -71,4 +71,9 @@ void Application::DestroyWindow_()
 {
 	glfwDestroyWindow(m_window);
 	glfwTerminate();
+}
+
+void Application::ClearScreen()
+{
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }

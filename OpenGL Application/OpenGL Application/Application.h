@@ -18,6 +18,7 @@ public:
 protected:
 	virtual bool CreateWindow_(int width, int height, const char* title);
 	virtual void DestroyWindow_();
+	void ClearScreen();
 
 	GLFWwindow* m_window;
 	bool m_gameOver;

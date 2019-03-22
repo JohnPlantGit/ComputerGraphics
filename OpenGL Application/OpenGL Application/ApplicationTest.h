@@ -7,6 +7,8 @@
 #include "Mesh.h"
 #include "OBJMesh.h"
 #include "Texture.h"
+#include "RenderTarget.h"
+
 class ApplicationTest : public Application
 {
 public:
@@ -40,21 +42,33 @@ private:
 
 	aie::ShaderProgram m_BRDFShader;
 	aie::ShaderProgram m_toonShader;
+	aie::ShaderProgram m_texturedShader;
+	aie::ShaderProgram m_postShader;
+	aie::ShaderProgram m_outlineShader;
 
+	Mesh m_fullScreenQuad;
 	Mesh m_quadMesh;
 	Mesh m_boxMesh;
 	glm::mat4 m_boxTransform;
 	
 	aie::OBJMesh m_spearMesh;
-	glm::mat4 m_spearTransform;
+	aie::OBJMesh m_fenceMesh;
+	aie::OBJMesh m_chestMesh;
 
-	aie::OBJMesh m_toonSpearMesh;
+	glm::mat4 m_spearTransform;	
 	glm::mat4 m_toonSpearTransform;
+	glm::mat4 m_outlineSpearTransform;
+
+	glm::mat4 m_fenceTransform;
+
+	glm::mat4 m_chestTransform;
 
 	//aie::OBJMesh m_carMesh;
 	aie::Texture m_texture;
 	Light m_light;
 	Light m_light2;
 	glm::vec3 m_ambientLight;
+
+	aie::RenderTarget m_renderTarget;
 };
 

@@ -46,6 +46,31 @@ bool ApplicationTest::Startup()
 		printf("Toon Shader Error: %s\n", m_toonShader.getLastError());
 		return false;
 	}
+	m_texturedShader.loadShader(aie::eShaderStage::VERTEX, "../Shaders/textured.vert");
+	m_texturedShader.loadShader(aie::eShaderStage::FRAGMENT, "../Shaders/textured.frag");
+	if (m_texturedShader.link() == false)
+	{
+		printf("Textured Shader Error: %s\n", m_texturedShader.getLastError());
+		return false;
+	}
+
+	m_postShader.loadShader(aie::eShaderStage::VERTEX, "../Shaders/post.vert");
+	m_postShader.loadShader(aie::eShaderStage::FRAGMENT, "../Shaders/post.frag");
+	if (m_postShader.link() == false)
+	{
+		printf("Post Shader Error: %s\n", m_postShader.getLastError());
+		return false;
+	}
+
+	m_outlineShader.loadShader(aie::eShaderStage::VERTEX, "../Shaders/outline.vert");
+	m_outlineShader.loadShader(aie::eShaderStage::FRAGMENT, "../Shaders/outline.frag");
+	if (m_outlineShader.link() == false)
+	{
+		printf("Outline Shader Error: %s\n", m_outlineShader.getLastError());
+		return false;
+	}
+
+	m_fullScreenQuad.InitialiseFullscreenQuad();
 
 	Mesh::Vertex vertices[4];
 	vertices[0].position = { -0.5f, 0, 0.5f, 1 };
@@ -56,23 +81,6 @@ bool ApplicationTest::Startup()
 	unsigned int indices[6] = { 0, 1, 2, 2, 1, 3 };
 
 	m_quadMesh.InitialiseQuad();
-
-	m_spearTransform =
-	{
-		1,0,0,0,
-		0,1,0,0,
-		0,0,1,0,
-		3,0,0,1
-	};
-
-	m_toonSpearTransform =
-	{
-		1,0,0,0,
-		0,1,0,0,
-		0,0,1,0,
-		-3,0,0,1
-	};
-
 
 	m_boxMesh.InitialiseBox(glm::vec3(3,3,3));
 	m_boxTransform =
@@ -88,9 +96,59 @@ bool ApplicationTest::Startup()
 		printf("Spear Mesh Error!\n");
 		return false;
 	}
-	if (m_toonSpearMesh.load("../Data/soulspear/soulspear.obj", true, true) == false)
+	m_spearTransform =
 	{
-		printf("Spear Mesh Error!\n");
+		1,0,0,0,
+		0,1,0,0,
+		0,0,1,0,
+		3,0,0,1
+	};
+	m_toonSpearTransform =
+	{
+		1,0,0,0,
+		0,1,0,0,
+		0,0,1,0,
+		-3,0,0,1
+	};
+	m_outlineSpearTransform =
+	{
+		1,0,0,0,
+		0,1,0,0,
+		0,0,1,0,
+		0,0,0,1
+	};
+
+	if (m_fenceMesh.load("../Data/woodenfence/woodenfence.obj", true, true) == false)
+	{
+		printf("Fence mesh error!\n");
+		return false;
+	}
+	m_fenceTransform =
+	{
+		1,0,0,0,
+		0,1,0,0,
+		0,0,1,0,
+		0,0,3,1
+	};
+
+	if (m_chestMesh.load("../Data/chest/Model.obj", true, true) == false)
+	{
+		printf("Chest Mesh Error!\n");
+		return false;
+	}
+	m_chestTransform =
+	{
+		10,0,0,0,
+		0,10,0,0,
+		0,0,10,0,
+		0,0,-3,1
+	};
+
+	int width, height;
+	glfwGetWindowSize(glfwGetCurrentContext(), &width, &height);
+	if (m_renderTarget.initialise(1, width, height) == false)
+	{
+		printf("Render Target Error!\n");
 		return false;
 	}
 	/*if (m_carMesh.load("../Data/bugatti/bugatti.obj", false) == false)
@@ -130,15 +188,20 @@ bool ApplicationTest::Update()
 	}
 
 	m_camera->Update();
-	//m_light.direction = glm::normalize(glm::vec3(glm::cos(glfwGetTime()), glm::sin(glfwGetTime()), 0));
-	m_light.direction = glm::normalize(glm::vec3(0, 0, -1));
+	m_light.direction = glm::normalize(glm::vec3(glm::cos(glfwGetTime()), glm::sin(glfwGetTime()), 0));
+	//m_light.direction = glm::normalize(glm::vec3(0, -1, 0));
 	m_light2.direction = -glm::normalize(glm::vec3(glm::cos(glfwGetTime()), 0, glm::sin(glfwGetTime())));
+	//m_light2.direction = glm::normalize(glm::vec3(0, 1, 0));
 
 	return true;
 }
 
 void ApplicationTest::Draw()
 {
+	m_renderTarget.bind();
+
+	ClearScreen();
+
 	glm::mat3 rotationMatrix;
 	float cs = cosf(m_cameraRotation);
 	float sn = sinf(m_cameraRotation);
@@ -163,16 +226,18 @@ void ApplicationTest::Draw()
 		aie::Gizmos::addLine(vec3(10, 0, -10 + i), vec3(-10, 0, -10 + i), (i == 10 ? white : black));
 	}
 
-	float s = glm::cos(glfwGetTime()) * 0.5f + 0.5f;
+	/*float s = glm::cos(glfwGetTime()) * 0.5f + 0.5f;
 	glm::vec3 p = (1.0f - s) * m_positions[0] + s * m_positions[1];
 	glm::quat r = glm::slerp(m_rotations[0], m_rotations[1], s);
 	glm::mat4 m = glm::translate(p) * glm::toMat4(r);
-	aie::Gizmos::addAABBFilled(p, glm::vec3(0.5f), glm::vec4(1, 0, 0, 1), &m);
+	aie::Gizmos::addAABBFilled(p, glm::vec3(0.5f), glm::vec4(1, 0, 0, 1), &m);*/
 
 	//aie::Gizmos::addSphere(vec3(0), 1, 50, 50, vec4(1, 1, 1, 1));
 
 	aie::Gizmos::addSphere(-m_light.direction * 10, 1, 10, 10, glm::vec4(1, 1, 1, 1)); // light
 	aie::Gizmos::addSphere(-m_light2.direction * 10, 1, 10, 10, glm::vec4(1, 1, 1, 1)); // light
+
+	aie::Gizmos::draw(m_camera->GetProjectionView());
 
 	// bind the BRDF shader
 	m_BRDFShader.bind();
@@ -205,11 +270,6 @@ void ApplicationTest::Draw()
 	// bind the toon shader
 	m_toonShader.bind();
 
-	// bind matrices
-	m_toonShader.bindUniform("ProjectionViewModel", m_camera->GetProjectionView() * m_toonSpearTransform);
-	m_toonShader.bindUniform("NormalMatrix", glm::inverseTranspose(glm::mat3(m_toonSpearTransform)));
-	m_toonShader.bindUniform("ModelMatrix", m_toonSpearTransform);
-
 	// bind lights
 	m_toonShader.bindUniform("lights[0].diffuse", m_light.diffuse);
 	m_toonShader.bindUniform("lights[0].specular", m_light.specular);
@@ -219,10 +279,75 @@ void ApplicationTest::Draw()
 	m_toonShader.bindUniform("lights[1].specular", m_light2.specular);
 	m_toonShader.bindUniform("lights[1].direction", m_light2.direction);
 
-	m_toonSpearMesh.draw();
+	// bind spear matrices
+	m_toonShader.bindUniform("ProjectionViewModel", m_camera->GetProjectionView() * m_toonSpearTransform);
+	m_toonShader.bindUniform("NormalMatrix", glm::inverseTranspose(glm::mat3(m_toonSpearTransform)));
+	m_toonShader.bindUniform("ModelMatrix", m_toonSpearTransform);
+
+	m_spearMesh.draw();
+
+	m_toonShader.bindUniform("ProjectionViewModel", m_camera->GetProjectionView() * m_fenceTransform);
+	m_toonShader.bindUniform("NormalMatrix", glm::inverseTranspose(glm::mat3(m_fenceTransform)));
+	m_toonShader.bindUniform("ModelMatrix", m_fenceTransform);
+
+	m_fenceMesh.draw();
+
+	// bind matrices
+	m_toonShader.bindUniform("ProjectionViewModel", m_camera->GetProjectionView() * m_chestTransform);
+	m_toonShader.bindUniform("NormalMatrix", glm::inverseTranspose(glm::mat3(m_chestTransform)));
+	m_toonShader.bindUniform("ModelMatrix", m_chestTransform);
+
+	m_chestMesh.draw();
 	//
 
+	// bind spear matrices
+	/*m_fenceToonShader.bindUniform("ProjectionViewModel", m_camera->GetProjectionView() * m_fenceTransform);
+	m_fenceToonShader.bindUniform("NormalMatrix", glm::inverseTranspose(glm::mat3(m_fenceTransform)));
+	m_fenceToonShader.bindUniform("ModelMatrix", m_fenceTransform);
+
+	m_fenceMesh.draw();*/
+	//
+
+	// bind the outline shader
+	m_outlineShader.bind();
+
+	// bind matrices
+	m_outlineShader.bindUniform("ProjectionViewModel", m_camera->GetProjectionView() * m_outlineSpearTransform);
+	m_outlineShader.bindUniform("NormalMatrix", glm::inverseTranspose(glm::mat3(m_outlineSpearTransform)));
+	m_outlineShader.bindUniform("ModelMatrix", m_outlineSpearTransform);
+
+	// bind lights
+	m_outlineShader.bindUniform("lights[0].diffuse", m_light.diffuse);
+	m_outlineShader.bindUniform("lights[0].specular", m_light.specular);
+	m_outlineShader.bindUniform("lights[0].direction", m_light.direction);
+
+	m_outlineShader.bindUniform("lights[1].diffuse", m_light2.diffuse);
+	m_outlineShader.bindUniform("lights[1].specular", m_light2.specular);
+	m_outlineShader.bindUniform("lights[1].direction", m_light2.direction);
+
+	m_outlineShader.bindUniform("outlineColour", vec4(1, 0, 0, 1));
+	m_outlineShader.bindUniform("cameraPosition", m_camera->GetPosition());
+
+	m_spearMesh.draw();
+
+	m_renderTarget.unbind();
+
+	ClearScreen();
+
+	m_postShader.bind();
+	m_postShader.bindUniform("colourTarget", 0);
+	m_renderTarget.getTarget(0).bind(0);
+
+	m_fullScreenQuad.Draw();
+
 	//m_texture.bind(0);
+
+	// bind texture shader
+	/*m_texturedShader.bind();
+
+	m_texturedShader.bindUniform("ProjectionViewModel", m_camera->GetProjectionView() * m_toonSpearTransform);
+	m_texturedShader.bindUniform("Kd", 0);
+	m_renderTarget.getTarget(0).bind(0);*/
 
 	//m_quadMesh.Draw();
 
@@ -231,7 +356,7 @@ void ApplicationTest::Draw()
 	//m_carMesh.draw();
 
 	//aie::Gizmos::draw(projection * view);
-	aie::Gizmos::draw(m_camera->GetProjectionView());
+	
 }
 
 void ApplicationTest::Shutdown()

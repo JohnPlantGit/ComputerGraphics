@@ -150,6 +150,40 @@ void Mesh::InitialiseQuad()
 	triCount = 2;
 }
 
+void Mesh::InitialiseFullscreenQuad()
+{
+	assert(vao == 0);
+
+	// generate buffers
+	glGenBuffers(1, &vbo);
+	glGenVertexArrays(1, &vao);
+
+	// bind vertex array
+	glBindVertexArray(vao);
+
+	// bind vertex buffer
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+
+	float vertices[] =
+	{
+		-1,1, // left top
+		-1,-1, // left bottom
+		1,1, // right top
+		-1,-1, // left bottom
+		1,-1, // right bottom
+		1,1 // right top
+	};
+
+	// fill vertex buffer
+	glBufferData(GL_ARRAY_BUFFER, 12 * sizeof(float), vertices, GL_STATIC_DRAW);
+
+	// enable first element as position
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 8, 0);
+
+	triCount = 2;
+}
+
 void Mesh::Draw()
 {
 	glBindVertexArray(vao); // re-bind vertex array for use
