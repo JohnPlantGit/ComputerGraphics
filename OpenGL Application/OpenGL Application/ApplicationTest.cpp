@@ -131,17 +131,56 @@ bool ApplicationTest::Startup()
 		0,0,3,1
 	};
 
-	if (m_chestMesh.load("../Data/chest/Model.obj", true, true) == false)
+	if (m_pillarMesh.load("../Data/pillar/LP_Pillar_Textured.obj", true, true) == false)
 	{
-		printf("Chest Mesh Error!\n");
+		printf("Pillar Mesh error!\n");
 		return false;
 	}
-	m_chestTransform =
+	m_pillarTransform =
 	{
-		10,0,0,0,
-		0,10,0,0,
-		0,0,10,0,
+		1,0,0,0,
+		0,1,0,0,
+		0,0,1,0,
 		0,0,-3,1
+	};
+
+	if (m_swordMesh.load("../Data/sword/sword3.obj", true, true) == false)
+	{
+		printf("sword Mesh error!\n");
+		return false;
+	}
+	m_swordTransform =
+	{
+		0.5f,0,0,0,
+		0,0.5f,0,0,
+		0,0,0.5f,0,
+		6,0,-3,1
+	};
+
+	if (m_barrelMesh.load("../Data/barrel/export3dcoat.obj", true, true) == false)
+	{
+		printf("Barrel Mesh error!\n");
+		return false;
+	}
+	m_barrelTransform =
+	{
+		1,0,0,0,
+		0,1,0,0,
+		0,0,1,0,
+		-6,0,-3,1
+	};
+
+	if (m_gunMesh.load("../Data/gun/MASS.obj", true, true) == false)
+	{
+		printf("gun Mesh error!\n");
+		return false;
+	}
+	m_gunTransform =
+	{
+		0.5f,0,0,0,
+		0,0.5f,0,0,
+		0,0,0.5f,0,
+		-6,0,3,1
 	};
 
 	int width, height;
@@ -257,7 +296,7 @@ void ApplicationTest::Draw()
 	m_BRDFShader.bindUniform("CameraPosition", m_camera->GetPosition());
 
 	m_BRDFShader.bindUniform("Roughness", 1.f);
-	m_BRDFShader.bindUniform("ReflectionCoefficient", 10.f);
+	m_BRDFShader.bindUniform("ReflectionCoefficient", 1.f);
 
 	// bind matrices
 	m_BRDFShader.bindUniform("ProjectionViewModel", m_camera->GetProjectionView() * m_spearTransform);
@@ -266,6 +305,34 @@ void ApplicationTest::Draw()
 
 	//m_BRDFShader.bindUniform("time", (float)glfwGetTime());
 	m_spearMesh.draw();
+
+	// bind matrices
+	m_BRDFShader.bindUniform("ProjectionViewModel", m_camera->GetProjectionView() * m_pillarTransform);
+	m_BRDFShader.bindUniform("NormalMatrix", glm::inverseTranspose(glm::mat3(m_pillarTransform)));
+	m_BRDFShader.bindUniform("ModelMatrix", m_pillarTransform);
+
+	m_pillarMesh.draw();
+
+	// bind matrices
+	m_BRDFShader.bindUniform("ProjectionViewModel", m_camera->GetProjectionView() * m_swordTransform);
+	m_BRDFShader.bindUniform("NormalMatrix", glm::inverseTranspose(glm::mat3(m_swordTransform)));
+	m_BRDFShader.bindUniform("ModelMatrix", m_swordTransform);
+
+	m_swordMesh.draw();
+
+	// bind matrices
+	m_BRDFShader.bindUniform("ProjectionViewModel", m_camera->GetProjectionView() * m_barrelTransform);
+	m_BRDFShader.bindUniform("NormalMatrix", glm::inverseTranspose(glm::mat3(m_barrelTransform)));
+	m_BRDFShader.bindUniform("ModelMatrix", m_barrelTransform);
+
+	m_barrelMesh.draw();
+
+	// bind matrices
+	m_BRDFShader.bindUniform("ProjectionViewModel", m_camera->GetProjectionView() * m_gunTransform);
+	m_BRDFShader.bindUniform("NormalMatrix", glm::inverseTranspose(glm::mat3(m_gunTransform)));
+	m_BRDFShader.bindUniform("ModelMatrix", m_gunTransform);
+
+	m_gunMesh.draw();
 
 	// bind the toon shader
 	m_toonShader.bind();
@@ -291,13 +358,6 @@ void ApplicationTest::Draw()
 	m_toonShader.bindUniform("ModelMatrix", m_fenceTransform);
 
 	m_fenceMesh.draw();
-
-	// bind matrices
-	m_toonShader.bindUniform("ProjectionViewModel", m_camera->GetProjectionView() * m_chestTransform);
-	m_toonShader.bindUniform("NormalMatrix", glm::inverseTranspose(glm::mat3(m_chestTransform)));
-	m_toonShader.bindUniform("ModelMatrix", m_chestTransform);
-
-	m_chestMesh.draw();
 	//
 
 	// bind spear matrices

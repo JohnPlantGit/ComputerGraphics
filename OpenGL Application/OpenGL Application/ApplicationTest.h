@@ -53,15 +53,22 @@ private:
 	
 	aie::OBJMesh m_spearMesh;
 	aie::OBJMesh m_fenceMesh;
-	aie::OBJMesh m_chestMesh;
+	aie::OBJMesh m_pillarMesh;
+	aie::OBJMesh m_swordMesh;
+	aie::OBJMesh m_barrelMesh;
+	aie::OBJMesh m_gunMesh;
 
 	glm::mat4 m_spearTransform;	
 	glm::mat4 m_toonSpearTransform;
 	glm::mat4 m_outlineSpearTransform;
+	glm::mat4 m_barrelTransform;
+	glm::mat4 m_gunTransform;
 
 	glm::mat4 m_fenceTransform;
 
-	glm::mat4 m_chestTransform;
+	glm::mat4 m_pillarTransform;
+
+	glm::mat4 m_swordTransform;
 
 	//aie::OBJMesh m_carMesh;
 	aie::Texture m_texture;
