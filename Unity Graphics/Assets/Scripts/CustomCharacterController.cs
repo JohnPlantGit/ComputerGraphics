@@ -13,6 +13,7 @@ public class CustomCharacterController : MonoBehaviour
 
     private Animator m_animator = null;
     private CapsuleCollider m_collider = null;
+    private HeadMovement m_ik;
     private Vector3 m_velocity;
     private bool m_grounded = false;
     private bool m_crouching = false;
@@ -31,6 +32,7 @@ public class CustomCharacterController : MonoBehaviour
     {
         m_animator = GetComponent<Animator>();
         m_collider = GetComponent<CapsuleCollider>();
+        m_ik = GetComponent<HeadMovement>();
 
         m_colliderHeight = m_collider.height;
         m_colliderCentre = m_collider.center.y;
@@ -54,7 +56,15 @@ public class CustomCharacterController : MonoBehaviour
             m_animator.SetTrigger("Punch");
         }
 
-        m_velocity += Physics.gravity * Time.deltaTime * m_friction * 0.5f;       
+        if (Input.GetMouseButtonDown(1))
+        {
+            m_ik.m_ikActive = true;
+        }
+        if (Input.GetMouseButtonUp(1))
+        {
+            m_ik.m_ikActive = false;
+        }
+        //m_velocity += Physics.gravity * Time.deltaTime * m_friction * 0.5f;
 
         if (Input.GetKeyDown(KeyCode.LeftControl))
         {
@@ -103,8 +113,11 @@ public class CustomCharacterController : MonoBehaviour
         if (movementVector.magnitude == 0 && m_grounded && m_velocity.magnitude <= 0.1)
         {
             m_velocity = Vector3.zero;
-        }  
-	}
+        }
+
+        if (!m_grounded)
+            m_velocity += Physics.gravity * Time.deltaTime * m_friction * 0.5f;
+    }
 
     private void LateUpdate()
     {

@@ -45,6 +45,10 @@ public class CameraController : MonoBehaviour
 	// Update is called once per frame
 	void LateUpdate ()
     {
+        //float cameraSpeed = 50;
+        //cameraSpeed *= Time.deltaTime;
+        //if ((transform.position - (m_parent.transform.position + m_offset)).magnitude > 0.01)
+        //transform.position = Vector3.Lerp(transform.position, m_parent.transform.position + m_offset, cameraSpeed);
         transform.position = m_parent.transform.position + m_offset;
 
         if (Input.GetKeyDown(KeyCode.Escape))

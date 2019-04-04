@@ -38,6 +38,8 @@ public class TerrainGenerator : MonoBehaviour
         float[,] heightMap = new float[resolution, resolution];
 
         float startPos = Random.Range(0, 5000);
+        float startPos2 = Random.Range(0, 5000);
+        float startPos3 = Random.Range(0, 5000);
 
         for (int x = 0; x < resolution; x++)
         {
@@ -50,7 +52,7 @@ public class TerrainGenerator : MonoBehaviour
                 {
                     float freq = Mathf.Pow(2, octave);
 
-                    float sample = Mathf.PerlinNoise(startPos + x * scale * freq, startPos + y * scale * freq);
+                    float sample = (Mathf.PerlinNoise(startPos + x * scale * freq, startPos + y * scale * freq) * Mathf.PerlinNoise(startPos2 + x * scale * freq, startPos2 + y * scale * freq)) + Mathf.PerlinNoise(startPos3 + x * scale * freq, startPos3 + y * scale * freq);
 
                     height += sample * amplitude;
 
