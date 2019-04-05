@@ -32,9 +32,7 @@
 		void vert(inout appdata_full v)
 		{
 			v.vertex.xyz += v.normal * _Amount;
-		}
-
-		
+		}		
 
 		sampler2D _MainTex;
 

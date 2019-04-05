@@ -62,19 +62,23 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\CameraController.cs" />
-    <Compile Include="Assets\Scripts\ColourPicker.cs" />
     <Compile Include="Assets\Scripts\CustomCharacterController.cs" />
-    <Compile Include="Assets\Scripts\DisplayVelocity.cs" />
+    <Compile Include="Assets\Scripts\DOFEffect.cs" />
     <Compile Include="Assets\Scripts\HeadMovement.cs" />
-    <Compile Include="Assets\Scripts\LightIntensity.cs" />
-    <Compile Include="Assets\Scripts\ObjectList.cs" />
     <Compile Include="Assets\Scripts\PostProcessing.cs" />
-    <Compile Include="Assets\Scripts\RemoveObject.cs" />
+    <Compile Include="Assets\Scripts\RotationEffect.cs" />
+    <Compile Include="Assets\Scripts\SpawnObject.cs" />
     <Compile Include="Assets\Scripts\TerrainGenerator.cs" />
-    <Compile Include="Assets\Scripts\ToggleMenu.cs" />
+    <Compile Include="Assets\Scripts\UI\ColourPicker.cs" />
     <Compile Include="Assets\Scripts\UI\CustomSlider.cs" />
-    <None Include="Assets\Greyscale.shader" />
-    <None Include="Assets\Glow.shader" />
+    <Compile Include="Assets\Scripts\UI\DisplayVelocity.cs" />
+    <Compile Include="Assets\Scripts\UI\LightIntensity.cs" />
+    <Compile Include="Assets\Scripts\UI\ObjectList.cs" />
+    <Compile Include="Assets\Scripts\UI\RemoveObject.cs" />
+    <Compile Include="Assets\Scripts\UI\ToggleMenu.cs" />
+    <None Include="Assets\Shaders\DepthOfField.shader" />
+    <None Include="Assets\Shaders\Greyscale.shader" />
+    <None Include="Assets\Shaders\Glow.shader" />
     <Reference Include="UnityEditor.StandardEvents">
       <HintPath>C:/Users/s181203/Documents/ComputerGraphics/Unity Graphics/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>
     </Reference>

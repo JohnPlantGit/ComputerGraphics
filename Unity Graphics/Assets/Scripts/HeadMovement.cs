@@ -35,21 +35,20 @@ public class HeadMovement : MonoBehaviour
         float rightPercentage = m_rightTimer / m_lerpLength;
 
 
-        m_animator.SetLookAtPosition(m_chest.position + facing);
         m_animator.SetIKPosition(AvatarIKGoal.LeftHand, m_neck.position + facing * 1f);
         m_animator.SetIKRotation(AvatarIKGoal.LeftHand, Quaternion.LookRotation(facing));
 
-        m_animator.SetLookAtWeight(leftPercentage);
         m_animator.SetIKPositionWeight(AvatarIKGoal.LeftHand, leftPercentage);
         m_animator.SetIKRotationWeight(AvatarIKGoal.LeftHand, leftPercentage);
-
-        m_animator.SetLookAtPosition(m_chest.position + facing);
+       
         m_animator.SetIKPosition(AvatarIKGoal.RightHand, m_neck.position + facing * 1f);
         m_animator.SetIKRotation(AvatarIKGoal.RightHand, Quaternion.LookRotation(facing));
-
-        m_animator.SetLookAtWeight(Mathf.Max(leftPercentage, rightPercentage));
+   
         m_animator.SetIKPositionWeight(AvatarIKGoal.RightHand, rightPercentage);
         m_animator.SetIKRotationWeight(AvatarIKGoal.RightHand, rightPercentage);
+
+        m_animator.SetLookAtWeight(1);
+        m_animator.SetLookAtPosition(m_chest.position + facing);
 
         if (m_ikActive)
         {
