@@ -1528,7 +1528,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_camera: {fileID: 1100098099}
   m_focusRange: 10
-  m_bokehRadius: 2
+  m_bokehRadius: 4
   m_focusSpeed: 10
 --- !u!1 &661911526
 GameObject:
@@ -8030,7 +8030,7 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RenderingLayerMask: 4294967295
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 3d314687c847b7048950835d14200560, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
