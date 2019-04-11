@@ -12,6 +12,7 @@ FlyCam::~FlyCam()
 {
 }
 
+// Moves the flycam according to the key input
 void FlyCam::Update()
 {
 	glm::vec3 position = GetPosition();

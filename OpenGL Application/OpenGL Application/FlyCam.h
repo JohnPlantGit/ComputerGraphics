@@ -7,6 +7,7 @@ public:
 	FlyCam();
 	~FlyCam();
 
+	// Allows the camera to move
 	virtual void Update();
 
 private:

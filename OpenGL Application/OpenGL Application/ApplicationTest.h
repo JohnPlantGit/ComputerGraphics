@@ -15,9 +15,15 @@ public:
 	ApplicationTest();
 	~ApplicationTest();
 
+	// Used for initialization
+	// returns true if there are no errors
 	virtual bool Startup();
+	// main update loop
+	// return false if the application should close
 	virtual bool Update();
+	// main draw loop
 	virtual void Draw();
+	// used for de-allocation
 	virtual void Shutdown();
 
 	struct Light

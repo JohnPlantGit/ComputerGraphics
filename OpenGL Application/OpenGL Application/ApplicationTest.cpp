@@ -18,6 +18,8 @@ ApplicationTest::~ApplicationTest()
 {
 }
 
+// Loads the models and shaders and sets up their transforms
+// return false if any of them error
 bool ApplicationTest::Startup()
 {
 	aie::Gizmos::create(10000, 10000, 10000, 10000);
@@ -32,6 +34,7 @@ bool ApplicationTest::Startup()
 	m_camera->SetLookAt(glm::vec3(-10, -10, -10), glm::vec3(10, 10, 10), glm::vec3(0, 1, 0));
 	m_camera->SetPosition(glm::vec3(10, 10, 10));
 
+	// load the brdf shader
 	m_BRDFShader.loadShader(aie::eShaderStage::VERTEX, "../Shaders/simple.vert");
 	m_BRDFShader.loadShader(aie::eShaderStage::FRAGMENT, "../Shaders/simple.frag");
 	if (m_BRDFShader.link() == false)
@@ -39,6 +42,8 @@ bool ApplicationTest::Startup()
 		printf("Shader Error: %s\n", m_BRDFShader.getLastError());
 		return false;
 	}
+
+	// load the toon shader
 	m_toonShader.loadShader(aie::eShaderStage::VERTEX, "../Shaders/toon.vert");
 	m_toonShader.loadShader(aie::eShaderStage::FRAGMENT, "../Shaders/toon.frag");
 	if (m_toonShader.link() == false)
@@ -46,6 +51,8 @@ bool ApplicationTest::Startup()
 		printf("Toon Shader Error: %s\n", m_toonShader.getLastError());
 		return false;
 	}
+
+	// load the basic texture shader
 	m_texturedShader.loadShader(aie::eShaderStage::VERTEX, "../Shaders/textured.vert");
 	m_texturedShader.loadShader(aie::eShaderStage::FRAGMENT, "../Shaders/textured.frag");
 	if (m_texturedShader.link() == false)
@@ -54,6 +61,7 @@ bool ApplicationTest::Startup()
 		return false;
 	}
 
+	// load the post processing shader
 	m_postShader.loadShader(aie::eShaderStage::VERTEX, "../Shaders/post.vert");
 	m_postShader.loadShader(aie::eShaderStage::FRAGMENT, "../Shaders/post.frag");
 	if (m_postShader.link() == false)
@@ -62,6 +70,7 @@ bool ApplicationTest::Startup()
 		return false;
 	}
 
+	// load the outline glow shader
 	m_outlineShader.loadShader(aie::eShaderStage::VERTEX, "../Shaders/outline.vert");
 	m_outlineShader.loadShader(aie::eShaderStage::FRAGMENT, "../Shaders/outline.frag");
 	if (m_outlineShader.link() == false)
@@ -70,7 +79,7 @@ bool ApplicationTest::Startup()
 		return false;
 	}
 
-	m_fullScreenQuad.InitialiseFullscreenQuad();
+	m_fullScreenQuad.InitialiseFullscreenQuad(); // initialize the quad to render the scene from the render target
 
 	Mesh::Vertex vertices[4];
 	vertices[0].position = { -0.5f, 0, 0.5f, 1 };
@@ -91,11 +100,13 @@ bool ApplicationTest::Startup()
 		0,0,0,1
 	};
 
+	// load the soulspear model
 	if (m_spearMesh.load("../Data/soulspear/soulspear.obj", true, true) == false)
 	{
 		printf("Spear Mesh Error!\n");
 		return false;
 	}
+	// initialize transforms
 	m_spearTransform =
 	{
 		1,0,0,0,
@@ -118,6 +129,7 @@ bool ApplicationTest::Startup()
 		0,0,0,1
 	};
 
+	// load the fence model
 	if (m_fenceMesh.load("../Data/woodenfence/woodenfence.obj", true, true) == false)
 	{
 		printf("Fence mesh error!\n");
@@ -131,6 +143,7 @@ bool ApplicationTest::Startup()
 		0,0,3,1
 	};
 
+	// load the pillar model
 	if (m_pillarMesh.load("../Data/pillar/LP_Pillar_Textured.obj", true, true) == false)
 	{
 		printf("Pillar Mesh error!\n");
@@ -144,6 +157,7 @@ bool ApplicationTest::Startup()
 		0,0,-3,1
 	};
 
+	// load the sword model
 	if (m_swordMesh.load("../Data/sword/sword3.obj", true, true) == false)
 	{
 		printf("sword Mesh error!\n");
@@ -157,6 +171,7 @@ bool ApplicationTest::Startup()
 		6,0,-3,1
 	};
 
+	// load the barrel model
 	if (m_barrelMesh.load("../Data/barrel/export3dcoat.obj", true, true) == false)
 	{
 		printf("Barrel Mesh error!\n");
@@ -170,6 +185,7 @@ bool ApplicationTest::Startup()
 		-6,0,-3,1
 	};
 
+	// load the gun model
 	if (m_gunMesh.load("../Data/gun/MASS.obj", true, true) == false)
 	{
 		printf("gun Mesh error!\n");
@@ -185,7 +201,7 @@ bool ApplicationTest::Startup()
 
 	int width, height;
 	glfwGetWindowSize(glfwGetCurrentContext(), &width, &height);
-	if (m_renderTarget.initialise(1, width, height) == false)
+	if (m_renderTarget.initialise(1, width, height) == false) // create full screen render target
 	{
 		printf("Render Target Error!\n");
 		return false;
@@ -204,6 +220,7 @@ bool ApplicationTest::Startup()
 		return false;
 	}
 
+	// setup lights
 	m_light.diffuse = { 1,1,1 };
 	m_light.specular = { 1,1,1 };
 	m_light2.diffuse = { 1,1,1 };
@@ -214,6 +231,7 @@ bool ApplicationTest::Startup()
 	return true;
 }
 
+// Moves the lights and cameras
 bool ApplicationTest::Update()
 {
 	aie::Input* input = aie::Input::getInstance();
@@ -235,6 +253,7 @@ bool ApplicationTest::Update()
 	return true;
 }
 
+// binds the shaders and draws the models
 void ApplicationTest::Draw()
 {
 	m_renderTarget.bind();
