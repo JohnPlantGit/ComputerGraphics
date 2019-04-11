@@ -30,6 +30,8 @@ public class TerrainGenerator : MonoBehaviour
             m_generateTerrain = false;
         }
 	}
+
+    // Randomly Generates the heightmap of the terrain using perlin noise
     void GenerateTerrain()
     {
         int resolution = m_terrain.terrainData.heightmapResolution;

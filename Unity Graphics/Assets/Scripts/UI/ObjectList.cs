@@ -33,6 +33,8 @@ public class ObjectList : MonoBehaviour
         }
     }
 	
+    // removes the gameobject from the list and destroy it
+    // re-calculates the position of the other elements
 	public void RemoveElement(GameObject toRemove)
     {
         LinkedListNode<GameObject> node = m_UIElements.Find(toRemove);
@@ -51,6 +53,8 @@ public class ObjectList : MonoBehaviour
         }
     }
 
+    // Adds a gameobject to the bottom of the list
+    // re-calculates the position of the elementsS
     public void AddElement(GameObject toAdd)
     {
         m_objects.Add(toAdd);

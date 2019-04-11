@@ -23,6 +23,8 @@ public class CameraController : MonoBehaviour
     {
         get { return m_pitch; }
     }
+
+    // Creates a ray coming out of the camera
     public Ray DirectionRay
     {
         get
@@ -49,8 +51,9 @@ public class CameraController : MonoBehaviour
         //cameraSpeed *= Time.deltaTime;
         //if ((transform.position - (m_parent.transform.position + m_offset)).magnitude > 0.01)
         //transform.position = Vector3.Lerp(transform.position, m_parent.transform.position + m_offset, cameraSpeed);
-        transform.position = m_parent.transform.position + m_offset;
+        transform.position = m_parent.transform.position + m_offset; // moves the camera with the parent
 
+        // lock and unlock the mouse
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             if (Cursor.lockState != CursorLockMode.Locked)
@@ -65,6 +68,7 @@ public class CameraController : MonoBehaviour
             }
         }
 
+        // if the mouse if locked
         if (Cursor.lockState == CursorLockMode.Locked)
         {
             m_yaw += Input.GetAxis("Mouse X") * 2;
@@ -87,11 +91,13 @@ public class CameraController : MonoBehaviour
             }
         }
 
+        // update the rotation of the camera
         transform.eulerAngles = new Vector3(m_pitch, m_yaw, 0);
         
         RaycastHit raycast;
         Vector3 direction = Quaternion.Euler(m_pitch, m_yaw, 0) * m_cameraDirection;
         
+        // checks for objects hitting the camera so it will move inwards when you reach a wall
         if (Physics.Raycast(transform.position, direction, out raycast, Mathf.Abs(m_armLength), LayerMask.NameToLayer("Player")))
         {
             Vector3 pos = m_camera.transform.localPosition;

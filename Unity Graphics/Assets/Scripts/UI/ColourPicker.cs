@@ -39,6 +39,7 @@ public class ColourPicker : MonoBehaviour
         m_bInput.text = Mathf.RoundToInt((startingColor.b * 255)).ToString();
     }
 
+    // Set the color of the material to the values of the rgb input
     public void SetColor(string input)
     {
         float r = 0, g = 0, b = 0;
@@ -49,6 +50,7 @@ public class ColourPicker : MonoBehaviour
         if (m_bInput.text.Length != 0)
             b = float.Parse(m_bInput.text);
 
+        // clamps the value to between 0-255
         if (r < 0)
             r = 0;
         if (r > 255)
@@ -70,7 +72,7 @@ public class ColourPicker : MonoBehaviour
 
         foreach (Material current in m_playerMaterials)
         {
-            current.SetColor("_Outline", new Color(r / 255, g / 255, b / 255));
+            current.SetColor("_Outline", new Color(r / 255, g / 255, b / 255)); // set the colour 
         }
     }
 	

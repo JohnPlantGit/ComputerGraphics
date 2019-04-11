@@ -45,29 +45,35 @@ public class CustomCharacterController : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
     {
+        // Jump
         if (m_grounded && Input.GetKeyDown(KeyCode.Space))
         {
             m_velocity += new Vector3(0, m_jumpSpeed, 0);
             m_animator.SetTrigger("Jump");
         }
 
+        // Run the punch animation
         if (Input.GetMouseButtonDown(0))
         {
             m_animator.SetTrigger("Punch");
         }
 
+        // Turn on inverse kinematics
         if (Input.GetMouseButtonDown(1))
         {
             m_ik.m_ikActive = true;
         }
+        // turn off inverse kinematics
         if (Input.GetMouseButtonUp(1))
         {
             m_ik.m_ikActive = false;
         }
         //m_velocity += Physics.gravity * Time.deltaTime * m_friction * 0.5f;
 
+        // Courch
         if (Input.GetKeyDown(KeyCode.LeftControl))
         {
+            // Stops the character from standing when there is something above them
             if (m_crouching)
             {
                 RaycastHit[] raycast = Physics.RaycastAll(transform.position, Vector3.up, 2.0f);
@@ -82,6 +88,7 @@ public class CustomCharacterController : MonoBehaviour
             }    
         }
 
+        // crouch timer
         if (m_crouching)
             m_crouchTimer -= Time.deltaTime;
         else
@@ -91,19 +98,22 @@ public class CustomCharacterController : MonoBehaviour
         if (m_crouchTimer < 0)
             m_crouchTimer = 0;
 
+        // used to blend between the standing and crouching animations
         m_animator.SetLayerWeight(0, m_crouchTimer / m_crouchLength);
         m_animator.SetLayerWeight(1, 1 - (m_crouchTimer / m_crouchLength));
 
+        // lerps the size of the collider when crouching
         m_collider.height = Mathf.Lerp(m_colliderHeight / 2, m_colliderHeight, m_crouchTimer / m_crouchLength);
         m_collider.center = new Vector3(0, Mathf.Lerp(m_colliderCentre / 2, m_colliderCentre, m_crouchTimer / m_crouchLength), 0);
 
+        // gets the input in the direction the camera is facing
         Vector3 movementVector = Quaternion.Euler(0, m_cameraController.Yaw, 0) * (new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"))).normalized;
 
         m_velocity += movementVector * (m_crouching ? m_crouchedAcceleration : m_acceleration) * Time.deltaTime;
         transform.position += m_velocity * Time.deltaTime;
         m_velocity -= m_velocity * m_friction * Time.deltaTime;
 
-        Vector3 lookVector = new Vector3(m_velocity.x, 0, m_velocity.z);
+        Vector3 lookVector = new Vector3(m_velocity.x, 0, m_velocity.z); // looks in the direction of movement
         if (lookVector.sqrMagnitude >= 0.001) // update to only use velocity x / z
         {
             transform.rotation = Quaternion.LookRotation(lookVector.normalized);
@@ -119,6 +129,7 @@ public class CustomCharacterController : MonoBehaviour
             m_velocity += Physics.gravity * Time.deltaTime * m_friction * 0.5f;
     }
 
+    // Handles collisions
     private void LateUpdate()
     {
         Collider[] collisions = Physics.OverlapCapsule(m_collider.center + new Vector3(0, m_collider.height / 2, 0) + transform.position, m_collider.center - new Vector3(0, m_collider.height / 2, 0) + transform.position, m_collider.radius, -1, QueryTriggerInteraction.Ignore);

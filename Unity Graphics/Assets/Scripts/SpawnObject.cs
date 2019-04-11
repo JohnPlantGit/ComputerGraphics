@@ -23,12 +23,13 @@ public class SpawnObject : MonoBehaviour
             for (int i = 0; i < m_transforms.Length; i++)
             {
                 Vector2 localMousePosition = m_transforms[i].InverseTransformPoint(Input.mousePosition);
-                if (m_transforms[i].rect.Contains(localMousePosition))
+                if (m_transforms[i].rect.Contains(localMousePosition)) // if the icon is clicked
                 {
                     RaycastHit hit;
-                    if (Physics.Raycast(m_camera.DirectionRay, out hit, 9999, LayerMask.NameToLayer("Player")))
+                    if (Physics.Raycast(m_camera.DirectionRay, out hit, 9999, LayerMask.NameToLayer("Player"))) // find the position the player is looking at
                     {
-                        GameObject newObject = GameObject.CreatePrimitive(m_objects[i]);
+                        GameObject newObject = GameObject.CreatePrimitive(m_objects[i]); // create the primative
+                        // places the object out of the ground
                         Mesh mesh = newObject.GetComponent<MeshFilter>().mesh;
                         float yMin = mesh.vertices[0].y;
                         foreach (Vector3 current in mesh.vertices)
@@ -38,7 +39,7 @@ public class SpawnObject : MonoBehaviour
                         }
                         newObject.transform.position = hit.point - new Vector3(0, yMin, 0);
                         newObject.transform.rotation = Quaternion.Euler(0, 0, 0);
-                        m_objectList.AddElement(newObject);                        
+                        m_objectList.AddElement(newObject); // add the object to the object list                     
                     }
 
                 }

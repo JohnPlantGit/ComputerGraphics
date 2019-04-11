@@ -28,6 +28,7 @@ public class ToggleMenu : MonoBehaviour
             m_text.text = "Show Menu";
     }
 
+    // Toggle the visability of the objects in the menu
     public void Toggle()
     {
         m_active = !m_active;

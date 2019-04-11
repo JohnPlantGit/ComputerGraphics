@@ -34,7 +34,7 @@ public class HeadMovement : MonoBehaviour
         float leftPercentage = m_leftTimer / m_lerpLength;
         float rightPercentage = m_rightTimer / m_lerpLength;
 
-
+        // activeate the inverse kinematics 
         m_animator.SetIKPosition(AvatarIKGoal.LeftHand, m_neck.position + facing * 1f);
         m_animator.SetIKRotation(AvatarIKGoal.LeftHand, Quaternion.LookRotation(facing));
 
@@ -50,6 +50,7 @@ public class HeadMovement : MonoBehaviour
         m_animator.SetLookAtWeight(1);
         m_animator.SetLookAtPosition(m_chest.position + facing);
 
+        // timer calculations for lerping
         if (m_ikActive)
         {
             if (side < -45)

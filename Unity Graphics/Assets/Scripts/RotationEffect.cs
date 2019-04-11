@@ -18,6 +18,7 @@ public class RotationEffect : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
     {
+        // randomly rotates the object
         Vector3 rotation = new Vector3(Random.value, Random.value, Random.value).normalized;
         m_objectTransform.Rotate((m_previousRoation + rotation * Time.deltaTime).normalized, Time.deltaTime * m_speed);
         m_previousRoation = rotation;

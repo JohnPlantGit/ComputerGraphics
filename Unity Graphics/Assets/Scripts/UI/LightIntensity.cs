@@ -12,6 +12,7 @@ public class LightIntensity : MonoBehaviour
         m_light = GetComponent<Light>();
 	}
 	
+    // Set the intensity of the light to the slider value
     public void SetIntensity(float value)
     {
         m_light.intensity = value;
